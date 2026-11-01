@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Manuscript Convert — LaTeX to Word</title>
+  <style>
+    :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;color:#173029;background:#f3f6f2}
+    *{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}button{cursor:pointer}
+    header{background:white;border-bottom:1px solid #e0e9e2;padding:20px max(24px,calc((100vw - 1180px)/2));display:flex;align-items:center;justify-content:space-between}
+    .brand{font-size:19px;font-weight:800;letter-spacing:-.045em}.brand span{color:#348d73}.local{font-size:12px;color:#407964;background:#e8f5eb;border-radius:100px;padding:8px 12px}
+    main{max-width:1180px;margin:auto;padding:58px 24px 90px}.eyebrow{font-size:12px;letter-spacing:.17em;text-transform:uppercase;color:#2e8d6f;font-weight:800}
+    h1{font-size:clamp(42px,6vw,74px);line-height:1.05;letter-spacing:-.065em;max-width:800px;margin:16px 0 19px}h1 em{font-style:normal;color:#358b70}
+    .lead{font-size:18px;color:#60736d;max-width:680px;line-height:1.55;margin:0 0 40px}
+    .layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(290px,1fr);gap:22px}.card{background:white;border:1px solid #dbe7de;border-radius:19px;box-shadow:0 12px 36px #173b2810}
+    .workspace,.guide{padding:30px}h2{font-size:22px;letter-spacing:-.04em;margin:0 0 8px}.muted{font-size:14px;line-height:1.55;color:#6a7b73;margin:0}
+    .drop{margin:25px 0 18px;border:2px dashed #abd5bb;border-radius:15px;background:#f7fbf8;text-align:center;padding:32px 16px;transition:.2s;outline:none}
+    .drop:hover,.drop.drag,.drop:focus-visible{border-color:#2b9570;background:#eefaef}.drop .symbol{display:block;font-size:30px;color:#388d71;margin-bottom:8px}.drop strong{display:block;font-size:16px}.drop small{display:block;color:#778b80;margin-top:6px}
+    .attachments{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0}.attachments label,.field label{font-size:12px;font-weight:750;color:#516c5c}.attachments input{display:block;font-size:12px;max-width:100%;margin-top:8px}
+    .inventory{background:#f6faf6;border:1px solid #dceadf;border-radius:13px;padding:17px;margin:18px 0}.inventory[hidden],.result[hidden],.field[hidden]{display:none}
+    .inventory-top{display:flex;align-items:center;justify-content:space-between;gap:10px}.inventory b{font-size:14px}.inventory .count{font-size:12px;color:#357c5c;background:#e2f2e8;border-radius:100px;padding:5px 9px}
+    .chips{display:flex;gap:8px;flex-wrap:wrap;margin:13px 0}.chip{font-size:12px;background:#e8f1e9;border-radius:100px;padding:6px 9px;color:#42624c}.inventory details{font-size:12px;color:#5d7164}.inventory summary{cursor:pointer}.inventory ul{margin:8px 0 0;padding-left:19px;max-height:120px;overflow:auto;overflow-wrap:anywhere}
+    .field{margin:16px 0}.field select{width:100%;border:1px solid #cad9ce;border-radius:9px;padding:10px;margin-top:8px;background:#fff;color:#203b2c}
+    .primary{border:0;border-radius:11px;background:#237b5c;color:white;font-weight:750;padding:15px 20px;width:100%;box-shadow:0 6px 17px #237b5c29}.primary:hover{background:#186e50}.primary:disabled{opacity:.48;cursor:not-allowed}
+    .feature{display:flex;gap:13px;border-top:1px solid #e7eee7;padding:18px 0}.feature:first-of-type{margin-top:18px}.feature .number{height:30px;width:30px;flex:none;border-radius:9px;background:#e6f3e9;color:#278164;display:grid;place-items:center;font-size:12px;font-weight:800}.feature b{font-size:14px}.feature p{font-size:13px;color:#718075;line-height:1.5;margin:4px 0 0}.note{margin-top:18px;border-radius:11px;background:#f4f7f3;padding:15px;color:#627166;line-height:1.5;font-size:12px}
+    .result{margin-top:22px;padding:24px}.result h2{font-size:20px}.stats{display:flex;flex-wrap:wrap;gap:9px;margin:16px 0}.stat{background:#e9f5eb;color:#287750;border-radius:9px;padding:8px 10px;font-size:13px;font-weight:750}.issue-list{margin:12px 0 0;padding-left:21px;font-size:13px;line-height:1.6;color:#8d5b2b}.issue-list li{overflow-wrap:anywhere}.success{color:#357b5d;font-size:14px}.file-name{font-weight:750;overflow-wrap:anywhere}
+    @media(max-width:790px){header{padding:18px 24px}main{padding-top:40px}.layout{grid-template-columns:1fr}.attachments{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header><div class="brand">manuscript<span> / convert</span></div><div class="local">Runs locally on your computer</div></header>
+  <main>
+    <div class="eyebrow">LaTeX → Microsoft Word</div>
+    <h1>Your manuscript,<br><em>ready for Word.</em></h1>
+    <p class="lead">Bring over your writing, editable equations, figures, tables, cross-references, and EndNote citation fields.</p>
+    <div class="layout">
+      <section class="card workspace" aria-labelledby="convert-title">
+        <h2 id="convert-title">Convert a manuscript</h2>
+        <p class="muted">Choose a ZIP project with its images and bibliography, or a single .tex file with separate attachments.</p>
+        <div class="drop" id="drop" role="button" tabindex="0" aria-label="Choose a ZIP or LaTeX file">
+          <span class="symbol">⇧</span><strong>Drop your file here or browse</strong><small>.zip or .tex · up to 40 MB</small>
+        </div>
+        <input id="project" type="file" accept=".zip,.tex" hidden>
+        <div class="attachments">
+          <label>Bibliography for single .tex<input id="bibliography" type="file" accept=".bib"></label>
+          <label>Figures for single .tex<input id="figures" type="file" accept=".png,.jpg,.jpeg,.pdf" multiple></label>
+        </div>
+        <section class="inventory" id="inventory" hidden aria-live="polite"></section>
+        <div class="field" id="main-field" hidden><label for="main-file">Main LaTeX file</label><select id="main-file"></select></div>
+        <button class="primary" id="convert" disabled>Convert to Word →</button>
+      </section>
+      <aside class="card guide">
+        <h2>What carries over</h2>
+        <div class="feature"><div class="number">01</div><div><b>Editable math</b><p>Inline and display equations become Word math objects, including math inside tables.</p></div></div>
+        <div class="feature"><div class="number">02</div><div><b>Figures and tables</b><p>PNG, JPEG, and PDF figures are inserted. Captions and references become Word fields.</p></div></div>
+        <div class="feature"><div class="number">03</div><div><b>EndNote citations</b><p>References become EndNote fields with embedded source records.</p></div></div>
+        <div class="note">After opening in Word, select all and press F9 to refresh numbering and references. Use EndNote Cite While You Write to refresh citations.</div>
+      </aside>
+    </div>
+    <section class="card result" id="result" hidden aria-live="polite"></section>
+  </main>
+  <script>
+    const project = document.getElementById('project');
+    const bibliography = document.getElementById('bibliography');
+    const figures = document.getElementById('figures');
+    const drop = document.getElementById('drop');
+    const inventory = document.getElementById('inventory');
+    const mainField = document.getElementById('main-field');
+    const mainFile = document.getElementById('main-file');
+    const convertButton = document.getElementById('convert');
+    const result = document.getElementById('result');
+    let chosenFile = null;
+    let inspectVersion = 0;
+
+    function uploadData(includeMain = false) {
+      const data = new FormData();
+      data.append('project', chosenFile);
+      if (bibliography.files[0]) data.append('bibliography', bibliography.files[0]);
+      for (const file of figures.files) data.append('figures', file);
+      if (includeMain && mainFile.value) data.append('main', mainFile.value);
+      return data;
+    }
+
+    function showError(message) {
+      result.replaceChildren();
+      const heading = document.createElement('h2');
+      heading.textContent = 'Conversion needs attention';
+      const detail = document.createElement('p');
+      detail.className = 'muted';
+      detail.textContent = message;
+      result.append(heading, detail);
+      result.hidden = false;
+    }
+
+    function addText(parent, tag, value, className = '') {
+      const element = document.createElement(tag);
+      element.textContent = value;
+      if (className) element.className = className;
+      parent.append(element);
+      return element;
+    }
+
+    function showInventory(summary) {
+      inventory.replaceChildren();
+      const top = addText(inventory, 'div', '', 'inventory-top');
+      addText(top, 'b', chosenFile.name, 'file-name');
+      addText(top, 'span', `${summary.total_files} project files`, 'count');
+      const chips = addText(inventory, 'div', '', 'chips');
+      for (const [count, label] of [[summary.tex_files.length, 'LaTeX'], [summary.bibliographies.length, 'bibliography'], [summary.figures.length, 'figure']]) {
+        addText(chips, 'span', `${count} ${label}${count === 1 ? '' : 's'}`, 'chip');
+      }
+      if (summary.figures.length) {
+        const details = addText(inventory, 'details', '');
+        addText(details, 'summary', 'View included figures');
+        const list = addText(details, 'ul', '');
+        for (const path of summary.figures) addText(list, 'li', path);
+      }
+      mainFile.replaceChildren();
+      for (const path of summary.tex_files) {
+        const option = document.createElement('option');
+        option.value = path;
+        option.textContent = path;
+        mainFile.append(option);
+      }
+      mainFile.value = summary.suggested_main;
+      mainField.hidden = summary.tex_files.length < 2;
+      inventory.hidden = false;
+      convertButton.disabled = false;
+    }
+
+    async function inspect() {
+      const version = ++inspectVersion;
+      inventory.hidden = true;
+      mainField.hidden = true;
+      result.hidden = true;
+      convertButton.disabled = true;
+      if (!chosenFile) return;
+      if (chosenFile.size > 40 * 1024 * 1024) { showError('The project exceeds the 40 MB upload limit.'); return; }
+      convertButton.textContent = 'Inspecting project…';
+      try {
+        const response = await fetch('/inspect', {method: 'POST', body: uploadData()});
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Could not inspect the project.');
+        if (version === inspectVersion) showInventory(data);
+      } catch (error) {
+        if (version === inspectVersion) showError(error.message);
+      } finally {
+        if (version === inspectVersion) convertButton.textContent = 'Convert to Word →';
+      }
+    }
+
+    project.addEventListener('change', () => { chosenFile = project.files[0] || null; inspect(); });
+    bibliography.addEventListener('change', () => { if (chosenFile) inspect(); });
+    figures.addEventListener('change', () => { if (chosenFile) inspect(); });
+    drop.addEventListener('click', () => project.click());
+    drop.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); project.click(); }
+    });
+    drop.addEventListener('dragover', event => { event.preventDefault(); drop.classList.add('drag'); });
+    drop.addEventListener('dragleave', () => drop.classList.remove('drag'));
+    drop.addEventListener('drop', event => {
+      event.preventDefault(); drop.classList.remove('drag');
+      chosenFile = [...event.dataTransfer.files].find(file => /\.(zip|tex)$/i.test(file.name)) || null;
+      inspect();
+    });
+
+    convertButton.addEventListener('click', async () => {
+      if (!chosenFile) return;
+      convertButton.disabled = true;
+      convertButton.textContent = 'Converting…';
+      result.hidden = true;
+      try {
+        const response = await fetch('/convert', {method: 'POST', body: uploadData(true)});
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.error || 'Conversion failed.');
+        }
+        const report = JSON.parse(response.headers.get('X-Conversion-Report') || '{}');
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'converted-manuscript.docx';
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(url), 60000);
+        result.replaceChildren();
+        addText(result, 'h2', 'DOCX ready — download started');
+        addText(result, 'p', `Converted ${report.main || mainFile.value}.`, 'success');
+        const stats = addText(result, 'div', '', 'stats');
+        for (const [count, label] of [[report.citations, 'citations'], [report.equations, 'equations'], [report.figures, 'figures'], [report.tables, 'tables'], [report.algorithms, 'algorithms']]) {
+          addText(stats, 'span', `${count || 0} ${label}`, 'stat');
+        }
+        const issues = [
+          ...(report.warnings || []),
+          ...(report.unresolved_citations || []).map(value => `Unresolved citation: ${value}`),
+          ...(report.unresolved_references || []).map(value => `Unresolved reference: ${value}`),
+          ...(report.missing_figures || []).map(value => `Missing figure: ${value}`)
+        ];
+        if (issues.length) {
+          addText(result, 'h3', 'Review in Word');
+          const list = addText(result, 'ul', '', 'issue-list');
+          for (const issue of issues) addText(list, 'li', issue);
+        } else addText(result, 'p', 'No missing assets or unresolved references were detected.', 'success');
+        result.hidden = false;
+      } catch (error) {
+        showError(error.message);
+      } finally {
+        convertButton.disabled = false;
+        convertButton.textContent = 'Convert to Word →';
+      }
+    });
+  </script>
+</body>
+</html>
